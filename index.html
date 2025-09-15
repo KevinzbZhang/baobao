@@ -1,0 +1,430 @@
+<html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>逍遥 AI-目标市场包包月热销排行</title>
+    <!-- 引入Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    
+    <!-- 配置Tailwind自定义颜色和字体 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        secondary: '#FF7D00',
+                        neutral: {
+                            100: '#F5F7FA',
+                            200: '#E5E6EB',
+                            300: '#C9CDD4',
+                            400: '#86909C',
+                            500: '#4E5969',
+                            600: '#272E3B',
+                            700: '#1D2129',
+                        }
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'card': '0 4px 20px rgba(0, 0, 0, 0.08)',
+                        'card-hover': '0 10px 30px rgba(0, 0, 0, 0.12)',
+                        'modal': '0 10px 50px rgba(0, 0, 0, 0.25)',
+                    }
+                },
+            }
+        }
+    </script>
+    
+    <!-- 自定义工具类 -->
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .tab-active {
+                @apply text-primary border-primary font-medium;
+            }
+            .card-transition {
+                @apply transition-all duration-300 ease-in-out;
+            }
+        }
+    </style>
+    
+    <style>
+        /* 基础动画定义 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+        
+        /* 图片查看器动画 */
+        @keyframes modalFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+
+<body class="font-inter bg-neutral-100 text-neutral-700 min-h-screen">
+    <!-- 图片查看器模态框 -->
+    <div id="image-modal" class="fixed inset-0 bg-black bg-opacity-80 z-50 hidden items-center justify-center p-4">
+        <div class="relative max-w-4xl w-full max-h-[90vh] animate-fade-in">
+            <button id="close-modal" class="absolute -top-12 right-0 text-white text-2xl hover:text-primary transition-colors">
+                <i class="fa fa-times"></i>
+            </button>
+            <button id="download-image" class="absolute -top-12 left-0 bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors text-sm flex items-center">
+                <i class="fa fa-download mr-2"></i> 下载图片
+            </button>
+            <img id="modal-image" src="" alt="大图预览" class="max-w-full max-h-[90vh] object-contain shadow-modal animate-fade-in">
+        </div>
+    </div>
+
+    <!-- 页面头部 -->
+    <header class="bg-white shadow-sm sticky top-0 z-40 transition-all duration-300">
+        <div class="container mx-auto px-4 py-6">
+            <h1 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-neutral-700 text-center">
+                <i class="fa fa-shopping-bag text-primary mr-2"></i>逍遥 AI-目标市场包包月热销排行
+            </h1>
+            <p class="text-neutral-500 text-center mt-2">逍遥AI定期获取并更新数据，助力杨阿姨包包生意发展</p>
+        </div>
+    </header>
+
+    <!-- 主要内容区 -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Tab切换区域 -->
+        <div class="mb-8 overflow-x-auto pb-2">
+            <div class="flex space-x-2 min-w-max">
+                <button class="tab-btn tab-active py-3 px-6 border-b-2 border-transparent text-neutral-500 hover:text-primary transition-colors duration-200" data-country="thailand">
+                    <i class="fa fa-flag mr-1"></i>泰国
+                </button>
+                <button class="tab-btn py-3 px-6 border-b-2 border-transparent text-neutral-500 hover:text-primary transition-colors duration-200" data-country="malaysia">
+                    <i class="fa fa-flag mr-1"></i>马来西亚
+                </button>
+                <button class="tab-btn py-3 px-6 border-b-2 border-transparent text-neutral-500 hover:text-primary transition-colors duration-200" data-country="vietnam">
+                    <i class="fa fa-flag mr-1"></i>越南
+                </button>
+                <button class="tab-btn py-3 px-6 border-b-2 border-transparent text-neutral-500 hover:text-primary transition-colors duration-200" data-country="usa">
+                    <i class="fa fa-flag mr-1"></i>美国
+                </button>
+            </div>
+        </div>
+
+        <!-- 国家标签显示 -->
+        <div class="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <h2 class="text-[clamp(1.2rem,2vw,1.8rem)] font-semibold text-neutral-700" id="country-title">
+                泰国热销包包 <span class="text-sm font-normal text-neutral-500">(按热度排序)</span>
+            </h2>
+            <div class="text-sm text-neutral-500 flex items-center">
+                <i class="fa fa-refresh mr-1"></i> 最近更新: <span id="last-update">2025-09-15 12:00</span>
+                <span class="mx-2">|</span>
+                <i class="fa fa-calendar mr-1"></i> 每周更新1-2次
+            </div>
+        </div>
+
+        <!-- 商品展示区域 - 泰国 -->
+        <div class="tab-content" id="thailand-content">
+            <!-- 移动端2列，平板及以上4列 -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6" id="thailand-grid">
+                <!-- 泰国商品1 -->
+                <div class="bg-white rounded-xl overflow-hidden shadow-card hover:shadow-card-hover card-transition hover:-translate-y-1 animate-fade-in" style="animation-delay: 0.1s">
+                    <div class="relative cursor-pointer bag-image-container" data-img="https://down-ws-cn.img.susercontent.com/th-11134211-7r98s-lnnyc9pyjqefbd_tn">
+                        <img src="https://down-ws-cn.img.susercontent.com/th-11134211-7r98s-lnnyc9pyjqefbd_tn" alt="女士斜挎包单肩包" class="w-full h-56 object-cover hover:scale-105 transition-transform duration-500">
+                        <span class="absolute top-3 left-3 bg-secondary text-white text-xs px-2 py-1 rounded-full">热销第1</span>
+                        <div class="absolute inset-0 bg-black bg-opacity-20 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <span class="bg-white text-primary px-3 py-1 rounded-full text-sm font-medium">点击查看大图</span>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-semibold text-base mb-1 line-clamp-1">女士斜挎包单肩包</h3>
+                        <p class="text-neutral-500 text-xs mb-2">女士 | 斜挎包&单肩包</p>
+                        <div class="flex justify-between items-center mb-3">
+                            <div>
+                                <p class="text-neutral-500 text-xs"><i class="fa fa-shopping-cart text-primary mr-1"></i> 月销: 12,488</p>
+                                <p class="text-neutral-500 text-xs mt-1"><i class="fa fa-money text-secondary mr-1"></i> 月销额: ฿739,093</p>
+                            </div>
+                            <span class="text-primary font-medium">฿59 / ¥13.22</span>
+                        </div>
+                        
+                        <!-- 要素拆解说明 -->
+                        <div class="pt-2 border-t border-neutral-100">
+                            <h4 class="text-xs font-medium text-neutral-600 mb-1">热销要素拆解:</h4>
+                            <ul class="text-[10px] text-neutral-500 space-y-1">
+                                <li><i class="fa fa-check text-primary mr-1"></i> 极致性价比(฿59)</li>
+                                <li><i class="fa fa-check text-primary mr-1"></i> 轻便实用设计</li>
+                                <li><i class="fa fa-check text-primary mr-1"></i> 多场景适用性</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 泰国商品2 -->
+                <div class="bg-white rounded-xl overflow-hidden shadow-card hover:shadow-card-hover card-transition hover:-translate-y-1 animate-fade-in" style="animation-delay: 0.2s">
+                    <div class="relative cursor-pointer bag-image-container" data-img="https://down-ws-cn.img.susercontent.com/th-11134207-7rasc-m1pf0q38zqbbe9_tn">
+                        <img src="https://down-ws-cn.img.susercontent.com/th-11134207-7rasc-m1pf0q38zqbbe9_tn" alt="高档女士单肩包" class="w-full h-56 object-cover hover:scale-105 transition-transform duration-500">
+                        <span class="absolute top-3 left-3 bg-secondary text-white text-xs px-2 py-1 rounded-full">热销第2</span>
+                        <div class="absolute inset-0 bg-black bg-opacity-20 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <span class="bg-white text-primary px-3 py-1 rounded-full text-sm font-medium">点击查看大图</span>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-semibold text-base mb-1 line-clamp-1">高档女士单肩包</h3>
+                        <p class="text-neutral-500 text-xs mb-2">女士 | 斜挎包&单肩包</p>
+                        <div class="flex justify-between items-center mb-3">
+                            <div>
+                                <p class="text-neutral-500 text-xs"><i class="fa fa-shopping-cart text-primary mr-1"></i> 月销: 8,300</p>
+                                <p class="text-neutral-500 text-xs mt-1"><i class="fa fa-money text-secondary mr-1"></i> 月销额: ฿3,212,783</p>
+                            </div>
+                            <span class="text-primary font-medium">฿379 / ¥84.90</span>
+                        </div>
+                        
+                        <!-- 要素拆解说明 -->
+                        <div class="pt-2 border-t border-neutral-100">
+                            <h4 class="text-xs font-medium text-neutral-600 mb-1">热销要素拆解:</h4>
+                            <ul class="text-[10px] text-neutral-500 space-y-1">
+                                <li><i class="fa fa-check text-primary mr-1"></i> 优质材质工艺</li>
+                                <li><i class="fa fa-check text-primary mr-1"></i> 高端品质定位</li>
+                                <li><i class="fa fa-check text-primary mr-1"></i> 时尚外观设计</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 泰国商品3 -->
+                <div class="bg-white rounded-xl overflow-hidden shadow-card hover:shadow-card-hover card-transition hover:-translate-y-1 animate-fade-in" style="animation-delay: 0.3s">
+                    <div class="relative cursor-pointer bag-image-container" data-img="https://down-ws-cn.img.susercontent.com/file/th-11134207-7rasa-m8w5al8uedeof9.webp">
+                        <img src="https://down-ws-cn.img.susercontent.com/file/th-11134207-7rasa-m8w5al8uedeof9.webp" alt="经济实惠单肩包" class="w-full h-56 object-cover hover:scale-105 transition-transform duration-500">
+                        <span class="absolute top-3 left-3 bg-secondary text-white text-xs px-2 py-1 rounded-full">热销第3</span>
+                        <div class="absolute inset-0 bg-black bg-opacity-20 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <span class="bg-white text-primary px-3 py-1 rounded-full text-sm font-medium">点击查看大图</span>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-semibold text-base mb-1 line-clamp-1">经济实惠单肩包</h3>
+                        <p class="text-neutral-500 text-xs mb-2">女士 | 斜挎包&单肩包</p>
+                        <div class="flex justify-between items-center mb-3">
+                            <div>
+                                <p class="text-neutral-500 text-xs"><i class="fa fa-shopping-cart text-primary mr-1"></i> 月销: 7,725</p>
+                                <p class="text-neutral-500 text-xs mt-1"><i class="fa fa-money text-secondary mr-1"></i> 月销额: ฿183,390</p>
+                            </div>
+                            <span class="text-primary font-medium">฿24 / ¥5.38</span>
+                        </div>
+                        
+                        <!-- 要素拆解说明 -->
+                        <div class="pt-2 border-t border-neutral-100">
+                            <h4 class="text-xs font-medium text-neutral-600 mb-1">热销要素拆解:</h4>
+                            <ul class="text-[10px] text-neutral-500 space-y-1">
+                                <li><i class="fa fa-check text-primary mr-1"></i> 超低价入门级(฿24)</li>
+                                <li><i class="fa fa-check text-primary mr-1"></i> 基础功能满足</li>
+                                <li><i class="fa fa-check text-primary mr-1"></i> 轻量便携设计</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 泰国商品4 -->
+                <div class="bg-white rounded-xl overflow-hidden shadow-card hover:shadow-card-hover card-transition hover:-translate-y-1 animate-fade-in" style="animation-delay: 0.4s">
+                    <div class="relative cursor-pointer bag-image-container" data-img="https://down-ws-cn.img.susercontent.com/file/sg-11134253-7rdya-mdlalzf7ubrte1.webp">
+                        <img src="https://down-ws-cn.img.susercontent.com/file/sg-11134253-7rdya-mdlalzf7ubrte1.webp" alt="时尚单肩包" class="w-full h-56 object-cover hover:scale-105 transition-transform duration-500">
+                        <span class="absolute top-3 left-3 bg-secondary text-white text-xs px-2 py-1 rounded-full">热销第4</span>
+                        <div class="absolute inset-0 bg-black bg-opacity-20 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <span class="bg-white text-primary px-3 py-1 rounded-full text-sm font-medium">点击查看大图</span>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-semibold text-base mb-1 line-clamp-1">时尚单肩包</h3>
+                        <p class="text-neutral-500 text-xs mb-2">女士 | 斜挎包&单肩包</p>
+                        <div class="flex justify-between items-center mb-3">
+                            <div>
+                                <p class="text-neutral-500 text-xs"><i class="fa fa-shopping-cart text-primary mr-1"></i> 月销: 6,649</p>
+                                <p class="text-neutral-500 text-xs mt-1"><i class="fa fa-money text-secondary mr-1"></i> 月销额: ฿416,127</p>
+                            </div>
+                            <span class="text-primary font-medium">฿62 / ¥13.89</span>
+                        </div>
+                        
+                        <!-- 要素拆解说明 -->
+                        <div class="pt-2 border-t border-neutral-100">
+                            <h4 class="text-xs font-medium text-neutral-600 mb-1">热销要素拆解:</h4>
+                            <ul class="text-[10px] text-neutral-500 space-y-1">
+                                <li><i class="fa fa-check text-primary mr-1"></i> 时尚美观设计</li>
+                                <li><i class="fa fa-check text-primary mr-1"></i> 中等价位(฿62)</li>
+                                <li><i class="fa fa-check text-primary mr-1"></i> 多场合适用性</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 商品展示区域 - 马来西亚 -->
+        <div class="tab-content hidden" id="malaysia-content">
+            <div class="bg-white rounded-xl p-6 sm:p-8 text-center shadow-card mx-auto max-w-md">
+                <div class="w-16 h-16 sm:w-20 sm:h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
+                    <i class="fa fa-rocket text-2xl sm:text-3xl text-primary"></i>
+                </div>
+                <h3 class="text-lg sm:text-xl font-medium text-neutral-700 mb-2 sm:mb-3">逍遥AI后续支持</h3>
+                <p class="text-neutral-500 text-sm sm:text-base mb-4 sm:mb-6">
+                    马来西亚市场的包包热销数据正在积极收集和分析中，即将上线。我们将为您提供最全面、最及时的马来西亚市场包包热销情报。
+                </p>
+                <p class="text-xs sm:text-sm text-neutral-500">
+                    预计上线时间: 2025年10月初
+                </p>
+            </div>
+        </div>
+
+        <!-- 商品展示区域 - 越南 -->
+        <div class="tab-content hidden" id="vietnam-content">
+            <div class="bg-white rounded-xl p-6 sm:p-8 text-center shadow-card mx-auto max-w-md">
+                <div class="w-16 h-16 sm:w-20 sm:h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
+                    <i class="fa fa-rocket text-2xl sm:text-3xl text-primary"></i>
+                </div>
+                <h3 class="text-lg sm:text-xl font-medium text-neutral-700 mb-2 sm:mb-3">逍遥AI后续支持</h3>
+                <p class="text-neutral-500 text-sm sm:text-base mb-4 sm:mb-6">
+                    越南市场的包包热销数据正在积极收集和分析中，即将上线。我们将为您提供最全面、最及时的越南市场包包热销情报。
+                </p>
+                <p class="text-xs sm:text-sm text-neutral-500">
+                    预计上线时间: 2025年10月初
+                </p>
+            </div>
+        </div>
+
+        <!-- 美国内容区 - 后续支持 -->
+        <div class="tab-content hidden" id="usa-content">
+            <div class="bg-white rounded-xl p-6 sm:p-8 text-center shadow-card mx-auto max-w-md">
+                <div class="w-16 h-16 sm:w-20 sm:h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
+                    <i class="fa fa-rocket text-2xl sm:text-3xl text-primary"></i>
+                </div>
+                <h3 class="text-lg sm:text-xl font-medium text-neutral-700 mb-2 sm:mb-3">逍遥AI后续支持</h3>
+                <p class="text-neutral-500 text-sm sm:text-base mb-4 sm:mb-6">
+                    美国市场的包包热销数据正在积极收集和分析中，即将上线。我们将为您提供最全面、最及时的美国市场包包热销情报。
+                </p>
+                <p class="text-xs sm:text-sm text-neutral-500">
+                    预计上线时间: 2025年10月初
+                </p>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="bg-white border-t border-neutral-200 mt-12 py-6">
+        <div class="container mx-auto px-4 text-center text-neutral-500">
+            <p class="mb-2 text-sm">© 2025 逍遥AI-目标市场包包月热销排行</p>
+            <p class="text-xs">本数据可供参考，助力杨阿姨的生意兴隆</p>
+        </div>
+    </footer>
+
+    <script>
+        // 页面加载完成后执行
+        document.addEventListener('DOMContentLoaded', function() {
+            // 获取DOM元素
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+            const countryTitle = document.getElementById('country-title');
+            const lastUpdate = document.getElementById('last-update');
+            const imageModal = document.getElementById('image-modal');
+            const modalImage = document.getElementById('modal-image');
+            const closeModal = document.getElementById('close-modal');
+            const downloadImage = document.getElementById('download-image');
+            
+            // 国家名称映射
+            const countryNames = {
+                'thailand': '泰国',
+                'malaysia': '马来西亚',
+                'vietnam': '越南',
+                'usa': '美国'
+            };
+            
+            // 为每个Tab按钮添加点击事件
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const country = this.getAttribute('data-country');
+                    
+                    // 更新活跃的Tab按钮样式
+                    tabBtns.forEach(b => b.classList.remove('tab-active'));
+                    this.classList.add('tab-active');
+                    
+                    // 隐藏所有内容，显示当前选中的内容
+                    tabContents.forEach(content => content.classList.add('hidden'));
+                    document.getElementById(`${country}-content`).classList.remove('hidden');
+                    
+                    // 更新国家标题
+                    countryTitle.innerHTML = `${countryNames[country]}热销包包 <span class="text-sm font-normal text-neutral-500">(按热度排序)</span>`;
+                    
+                    // 更新最后更新时间（模拟）
+                    const now = new Date();
+                    const hours = now.getHours().toString().padStart(2, '0');
+                    const minutes = now.getMinutes().toString().padStart(2, '0');
+                    const date = now.toISOString().split('T')[0];
+                    lastUpdate.textContent = `${date} ${hours}:${minutes}`;
+                });
+            });
+            
+            // 图片查看和下载功能
+            const imageContainers = document.querySelectorAll('.bag-image-container');
+            let currentImageUrl = '';
+            
+            imageContainers.forEach(container => {
+                container.addEventListener('click', function() {
+                    currentImageUrl = this.getAttribute('data-img');
+                    modalImage.src = currentImageUrl;
+                    modalImage.alt = this.querySelector('img').alt;
+                    imageModal.classList.remove('hidden');
+                    imageModal.classList.add('flex');
+                    document.body.style.overflow = 'hidden'; // 防止背景滚动
+                });
+            });
+            
+            // 关闭图片查看器
+            closeModal.addEventListener('click', function() {
+                imageModal.classList.add('hidden');
+                imageModal.classList.remove('flex');
+                document.body.style.overflow = ''; // 恢复背景滚动
+            });
+            
+            // 点击图片查看器外部关闭
+            imageModal.addEventListener('click', function(e) {
+                if (e.target === imageModal) {
+                    imageModal.classList.add('hidden');
+                    imageModal.classList.remove('flex');
+                    document.body.style.overflow = '';
+                }
+            });
+            
+            // 下载图片功能
+            downloadImage.addEventListener('click', function() {
+                if (!currentImageUrl) return;
+                
+                // 创建一个临时链接进行下载
+                const link = document.createElement('a');
+                link.href = currentImageUrl;
+                // 从alt属性获取文件名
+                const fileName = modalImage.alt.replace(/\s+/g, '_') + '.jpg';
+                link.download = fileName;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            });
+            
+            // 滚动时改变头部样式
+            window.addEventListener('scroll', function() {
+                const header = document.querySelector('header');
+                if (window.scrollY > 10) {
+                    header.classList.add('py-3');
+                    header.classList.remove('py-6');
+                    header.classList.add('shadow');
+                } else {
+                    header.classList.add('py-6');
+                    header.classList.remove('py-3');
+                    header.classList.remove('shadow');
+                }
+            });
+        });
+    </script>
+</body></html>
+    
